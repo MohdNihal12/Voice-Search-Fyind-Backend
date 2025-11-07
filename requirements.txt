@@ -1,0 +1,6 @@
+SpeechRecognition==3.14.3
+uvicorn==0.38.0
+fastapi==0.120.2
+python-multipart==0.0.20
+pydub==0.25.1
+jiwer==4.0.0
