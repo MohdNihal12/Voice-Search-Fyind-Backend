@@ -6,7 +6,8 @@ import tempfile
 import os
 import re
 from typing import List
-from jiwer import wer, cer
+from datetime import datetime 
+# from jiwer import wer, cer
 
 INTENT_PHRASES_PATH = "intent_phrases.txt"
 
@@ -23,6 +24,11 @@ app.add_middleware(
 # ---------------------------
 # Load intent phrases
 # ---------------------------
+
+AUDIO_STORAGE_DIR = "uploaded_audio"
+os.makedirs(AUDIO_STORAGE_DIR, exist_ok=True)
+
+
 def load_intent_phrases(filepath: str = INTENT_PHRASES_PATH) -> List[str]:
     """
     Load phrases from file, remove empty lines, and sort longest first.
@@ -56,54 +62,65 @@ def clean_text_remove_intent_phrases(text: str, intent_phrases: List[str]) -> st
     return cleaned
 
 
+
 # ---------------------------
-# Transcription Endpoint
+# Transcription Endpoint (Raw text - WITH intent phrases)
 # ---------------------------
 @app.post("/trans")
-async def transcribe(file: UploadFile = File(...)):
+async def transcribe_both(file: UploadFile = File(...)):
+    """
+    Returns both raw and cleaned transcription in a single response.
+    """
     recognizer = sr.Recognizer()
     temp_in = tempfile.NamedTemporaryFile(delete=False, suffix=".tmp")
     wav_path = None
 
     try:
         # Save uploaded file temporarily
-        temp_in.write(await file.read())
+        file_content = await file.read()
+        temp_in.write(file_content)
         temp_in.flush()
         temp_in.close()
 
-        # Convert to WAV using pydub (requires ffmpeg)
+        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        saved_path = os.path.join(AUDIO_STORAGE_DIR, f"{timestamp}_{file.filename}")
+        with open(saved_path, "wb") as f:
+            f.write(file_content)
+
+        # Convert to WAV using pydub
         audio = AudioSegment.from_file(temp_in.name)
         wav_path = temp_in.name + ".wav"
-        # print(wav_path)
         audio.export(wav_path, format="wav")
 
         # Transcribe audio
         with sr.AudioFile(wav_path) as source:
             audio_data = recognizer.record(source)
-            text = recognizer.recognize_google(audio_data)
+            raw_text = recognizer.recognize_google(audio_data)
 
             # Load phrases and clean text
             intent_phrases = load_intent_phrases()
-            cleaned = clean_text_remove_intent_phrases(text, intent_phrases)
+            cleaned_text = clean_text_remove_intent_phrases(raw_text, intent_phrases)
 
             # Print both versions to terminal
-            print(f"\n Raw transcription: {text}")
-            print(f" Cleaned query: {cleaned}\n")
+            print(f"\n Raw transcription: {raw_text}")
+            print(f" Cleaned query: {cleaned_text}\n")
 
-            # Return only cleaned text to frontend
-            return {"text": cleaned}
+            # Return both texts
+            return {
+                "raw_text": raw_text,
+                "cleaned_text": cleaned_text
+            }
 
     except sr.UnknownValueError:
         print("Could not understand the audio")
-        return {"text": ""}
+        return {"raw_text": "", "cleaned_text": ""}
     except sr.RequestError as e:
         print(f"Speech recognition service error: {e}")
-        return {"text": ""}
+        return {"raw_text": "", "cleaned_text": ""}
     except Exception as e:
-        print(f" Error during transcription: {e}")
-        return {"text": ""}
+        print(f"Error during transcription: {e}")
+        return {"raw_text": "", "cleaned_text": ""}
     finally:
-        # Always clean up temporary files
         for path in [temp_in.name, wav_path]:
             if path and os.path.exists(path):
                 try:
@@ -111,61 +128,5 @@ async def transcribe(file: UploadFile = File(...)):
                 except Exception:
                     pass
 
-
-#trascription evaluation endpoint
-@app.post("/evaluate")
-async def evaluate_transcription(file: UploadFile = File(...), ground_truth: str = Form(...)):
-    recognizer = sr.Recognizer()
-    temp_in = tempfile.NamedTemporaryFile(delete=False, suffix=".tmp")
-    wav_path = None
-
-    try:
-        temp_in.write(await file.read())
-        temp_in.flush()
-        temp_in.close()
-
-        audio = AudioSegment.from_file(temp_in.name)
-        wav_path = temp_in.name + ".wav"
-        audio.export(wav_path, format="wav")
-
-        with sr.AudioFile(wav_path) as source:
-            audio_data = recognizer.record(source)
-            predicted_text = recognizer.recognize_google(audio_data)
-
-        # Clean the text
-        intent_phrases = load_intent_phrases()
-        cleaned_pred = clean_text_remove_intent_phrases(predicted_text, intent_phrases)
-        cleaned_truth = clean_text_remove_intent_phrases(ground_truth, intent_phrases)
-
-        # Compute metrics
-        word_error_rate = wer(cleaned_truth.lower(), cleaned_pred.lower())
-        char_error_rate = cer(cleaned_truth.lower(), cleaned_pred.lower())
-        accuracy = (1 - char_error_rate) * 100
-
-        report = {
-            "ground_truth": cleaned_truth,
-            "predicted_text": cleaned_pred,
-            "word_error_rate": round(word_error_rate, 3),
-            "char_error_rate": round(char_error_rate, 3),
-            "accuracy_percent": round(accuracy, 2)
-        }
-
-        print("\n--- Accuracy Report ---")
-        for k, v in report.items():
-            print(f"{k}: {v}")
-        print("-----------------------\n")
-
-        return report
-
-    except Exception as e:
-        print(f"Error during evaluation: {e}")
-        return {"error": str(e)}
-
-    finally:
-        for path in [temp_in.name, wav_path]:
-            if path and os.path.exists(path):
-                os.remove(path)
-
-
 ################################################
-# uvicorn voice:app --host 10.0.17.101  --port 8001 --reload
+# uvicorn voice:app --host 10.0.17.101 --port 8001 --reload
