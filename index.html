@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice Intent Manager</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4a6fa5;
+            --secondary-color: #6b8cbc;
+            --accent-color: #ff6b6b;
+            --light-color: #f5f7fa;
+            --dark-color: #2c3e50;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --border-radius: 8px;
+            --transition: all 0.3s ease;
+            --shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f0f2f5;
+            color: var(--dark-color);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 20px 0;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-color), var(--warning-color), var(--success-color));
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        h1 {
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        h1 i {
+            color: var(--accent-color);
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: var(--transition);
+        }
+        
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        
+        .card h2 {
+            margin-bottom: 15px;
+            color: var(--primary-color);
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+            position: relative;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        
+        input[type="text"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+        
+        input[type="text"]:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(74, 111, 165, 0.2);
+            outline: none;
+        }
+        
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 18px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 1rem;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-weight: 600;
+        }
+        
+        button:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        button.danger {
+            background-color: var(--danger-color);
+        }
+        
+        button.danger:hover {
+            background-color: #c0392b;
+        }
+        
+        button.success {
+            background-color: var(--success-color);
+        }
+        
+        button.success:hover {
+            background-color: #27ae60;
+        }
+        
+        button.warning {
+            background-color: var(--warning-color);
+        }
+        
+        button.warning:hover {
+            background-color: #e67e22;
+        }
+        
+        button.secondary {
+            background-color: #95a5a6;
+        }
+        
+        button.secondary:hover {
+            background-color: #7f8c8d;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 10px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+        
+        tr {
+            transition: var(--transition);
+        }
+        
+        tr:hover {
+            background-color: #f8f9fa;
+            transform: scale(1.01);
+        }
+        
+        .actions {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .actions button {
+            padding: 8px 12px;
+            font-size: 0.85rem;
+        }
+        
+        .alert {
+            padding: 12px 15px;
+            border-radius: var(--border-radius);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateY(-10px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            color: #777;
+            font-size: 0.9rem;
+        }
+        
+        .api-info {
+            background-color: #f8f9fa;
+            border-left: 4px solid var(--primary-color);
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 0 var(--border-radius) var(--border-radius) 0;
+        }
+        
+        .api-info h3 {
+            margin-bottom: 10px;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .api-endpoint {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            padding: 10px;
+            background-color: white;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+        }
+        
+        .api-endpoint:hover {
+            transform: translateX(5px);
+        }
+        
+        .method {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            margin-right: 10px;
+            font-size: 0.8rem;
+            min-width: 60px;
+            text-align: center;
+        }
+        
+        .method.get {
+            background-color: #61affe;
+            color: white;
+        }
+        
+        .method.post {
+            background-color: #49cc90;
+            color: white;
+        }
+        
+        .method.put {
+            background-color: #fca130;
+            color: white;
+        }
+        
+        .method.delete {
+            background-color: #f93e3e;
+            color: white;
+        }
+        
+        .search-container {
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .search-container i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #777;
+        }
+        
+        .search-container input {
+            padding-left: 40px;
+        }
+        
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 15px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .stat-label {
+            color: #777;
+            font-size: 0.9rem;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #777;
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: #ddd;
+        }
+        
+        .connection-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: var(--success-color);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .status-indicator.offline {
+            background-color: var(--danger-color);
+        }
+        
+        .edit-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+        }
+        
+        .edit-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            transform: translateY(-20px);
+            transition: var(--transition);
+        }
+        
+        .edit-modal.active .modal-content {
+            transform: translateY(0);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #777;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-close:hover {
+            background: #f5f5f5;
+            border-radius: 50%;
+        }
+        
+        /* Pagination Styles */
+        .pagination-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-top: 20px;
+            padding: 15px;
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+        
+        .page-info {
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+        
+        .page-size-selector {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-left: auto;
+        }
+        
+        .page-size-selector select {
+            padding: 8px 12px;
+            border-radius: var(--border-radius);
+            border: 1px solid #ddd;
+            background-color: white;
+        }
+        
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .btn-group {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            .btn-group button {
+                width: 100%;
+            }
+            
+            table {
+                display: block;
+                overflow-x: auto;
+            }
+            
+            .actions {
+                flex-direction: column;
+            }
+            
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .pagination-controls {
+                flex-wrap: wrap;
+            }
+            
+            .page-size-selector {
+                margin-left: 0;
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <h1><i class="fas fa-microphone-alt"></i> Voice Intent Manager</h1>
+                <div class="btn-group">
+                    <div class="connection-status">
+                        <div class="status-indicator" id="statusIndicator"></div>
+                        <span id="statusText">Connected</span>
+                    </div>
+                    <button id="refreshBtn"><i class="fas fa-sync-alt"></i> Refresh Phrases</button>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <div class="container">
+        <!-- Alert Messages -->
+        <div id="alertContainer"></div>
+        
+        <!-- Stats Cards -->
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-value" id="totalPhrases">0</div>
+                <div class="stat-label">Total Phrases</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="lastUpdated">-</div>
+                <div class="stat-label">Last Updated</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="currentPageInfo">1/1</div>
+                <div class="stat-label">Current Page</div>
+            </div>
+        </div>
+        
+        <!-- Add New Phrase Section -->
+        <div class="card">
+            <h2><i class="fas fa-plus-circle"></i> Add New Intent Phrase</h2>
+            <form id="addPhraseForm">
+                <div class="form-group">
+                    <label for="newPhrase">Phrase:</label>
+                    <input type="text" id="newPhrase" placeholder="Enter a new intent phrase" required>
+                </div>
+                <button type="submit" class="success"><i class="fas fa-save"></i> Add Phrase</button>
+            </form>
+        </div>
+        
+        <!-- Search Section -->
+        <div class="search-container">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="Search phrases...">
+        </div>
+        
+        <!-- Intent Phrases List -->
+        <div class="card">
+            <h2><i class="fas fa-list"></i> Intent Phrases</h2>
+            <div id="phrasesTableContainer">
+                <table id="phrasesTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Phrase</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="phrasesTableBody">
+                        <!-- Phrases will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+            <!-- Pagination Controls -->
+            <div class="pagination-controls" id="paginationControls">
+                <button id="firstPage" class="secondary"><i class="fas fa-angle-double-left"></i></button>
+                <button id="prevPage" class="secondary"><i class="fas fa-chevron-left"></i> Previous</button>
+                <span class="page-info">Page <span id="currentPage">1</span> of <span id="totalPages">1</span></span>
+                <button id="nextPage" class="secondary">Next <i class="fas fa-chevron-right"></i></button>
+                <button id="lastPage" class="secondary"><i class="fas fa-angle-double-right"></i></button>
+                <div class="page-size-selector">
+                    <span>Show:</span>
+                    <select id="pageSizeSelect">
+                        <option value="5">5</option>
+                        <option value="10" selected>10</option>
+                        <option value="20">20</option>
+                        <option value="50">50</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <!-- API Information -->
+        <div class="api-info">
+            <h3><i class="fas fa-code"></i> Available API Endpoints</h3>
+            <div class="api-endpoint">
+                <span class="method get">GET</span>
+                <span>/intent-phrases - Retrieve all intent phrases</span>
+            </div>
+            <div class="api-endpoint">
+                <span class="method post">POST</span>
+                <span>/intent-phrases - Add a new intent phrase</span>
+            </div>
+            <div class="api-endpoint">
+                <span class="method put">PUT</span>
+                <span>/intent-phrases/{id} - Update an intent phrase</span>
+            </div>
+            <div class="api-endpoint">
+                <span class="method delete">DELETE</span>
+                <span>/intent-phrases/{id} - Delete an intent phrase</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Edit Modal -->
+    <div class="edit-modal" id="editModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Phrase</h3>
+                <button class="modal-close" id="modalClose"><i class="fas fa-times"></i></button>
+            </div>
+            <form id="editPhraseForm">
+                <div class="form-group">
+                    <label for="editPhraseInput">Phrase:</label>
+                    <input type="text" id="editPhraseInput" required>
+                    <input type="hidden" id="editPhraseId">
+                </div>
+                <div class="btn-group">
+                    <button type="submit" class="success"><i class="fas fa-save"></i> Save Changes</button>
+                    <button type="button" class="secondary" id="cancelEdit"><i class="fas fa-times"></i> Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <footer>
+        <div class="container">
+            <p>Voice Intent Manager &copy; 2023 | Connected to FastAPI Backend</p>
+        </div>
+    </footer>
+
+    <script>
+        // Configuration - Update this with your backend URL
+        const API_BASE_URL = 'http://127.0.0.1:8001';
+        
+        // DOM Elements
+        const alertContainer = document.getElementById('alertContainer');
+        const addPhraseForm = document.getElementById('addPhraseForm');
+        const newPhraseInput = document.getElementById('newPhrase');
+        const phrasesTableBody = document.getElementById('phrasesTableBody');
+        const refreshBtn = document.getElementById('refreshBtn');
+        const searchInput = document.getElementById('searchInput');
+        const totalPhrasesElement = document.getElementById('totalPhrases');
+        const lastUpdatedElement = document.getElementById('lastUpdated');
+        const currentPageInfoElement = document.getElementById('currentPageInfo');
+        const statusIndicator = document.getElementById('statusIndicator');
+        const statusText = document.getElementById('statusText');
+        const editModal = document.getElementById('editModal');
+        const editPhraseForm = document.getElementById('editPhraseForm');
+        const editPhraseInput = document.getElementById('editPhraseInput');
+        const editPhraseId = document.getElementById('editPhraseId');
+        const modalClose = document.getElementById('modalClose');
+        const cancelEdit = document.getElementById('cancelEdit');
+        
+        // Pagination Elements
+        const paginationControls = document.getElementById('paginationControls');
+        const firstPageBtn = document.getElementById('firstPage');
+        const prevPageBtn = document.getElementById('prevPage');
+        const currentPageElement = document.getElementById('currentPage');
+        const totalPagesElement = document.getElementById('totalPages');
+        const nextPageBtn = document.getElementById('nextPage');
+        const lastPageBtn = document.getElementById('lastPage');
+        const pageSizeSelect = document.getElementById('pageSizeSelect');
+        
+        // State
+        let allPhrases = [];
+        let isLoading = false;
+        let currentPage = 1;
+        let itemsPerPage = 10;
+        let filteredPhrases = [];
+        
+        // Show alert message
+        function showAlert(message, type = 'success') {
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            
+            const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+            alert.innerHTML = `<i class="fas ${icon}"></i> ${message}`;
+            
+            alertContainer.appendChild(alert);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                alert.remove();
+            }, 5000);
+        }
+        
+        // Update stats
+        function updateStats(phrases) {
+            totalPhrasesElement.textContent = phrases.length;
+            lastUpdatedElement.textContent = new Date().toLocaleTimeString();
+            currentPageInfoElement.textContent = `${currentPage}/${Math.ceil(phrases.length / itemsPerPage)}`;
+        }
+        
+        // Check API connection
+        async function checkConnection() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/intent-phrases`);
+                if (response.ok) {
+                    statusIndicator.classList.remove('offline');
+                    statusText.textContent = 'Connected';
+                } else {
+                    throw new Error('Connection failed');
+                }
+            } catch (error) {
+                statusIndicator.classList.add('offline');
+                statusText.textContent = 'Offline';
+                console.error('Connection check failed:', error);
+            }
+        }
+        
+        // Load all intent phrases
+        async function loadIntentPhrases() {
+            if (isLoading) return;
+            
+            isLoading = true;
+            refreshBtn.innerHTML = '<div class="loading"></div> Loading...';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/intent-phrases`);
+                if (!response.ok) {
+                    throw new Error(`Failed to load phrases: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                allPhrases = data.search_keywords || [];
+                filteredPhrases = [...allPhrases];
+                displayIntentPhrases();
+                updateStats(allPhrases);
+                checkConnection();
+            } catch (error) {
+                console.error('Error loading intent phrases:', error);
+                showAlert(`Error loading phrases: ${error.message}`, 'error');
+                statusIndicator.classList.add('offline');
+                statusText.textContent = 'Offline';
+            } finally {
+                isLoading = false;
+                refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Refresh Phrases';
+            }
+        }
+        
+        // Display intent phrases in the table with pagination
+        function displayIntentPhrases() {
+            phrasesTableBody.innerHTML = '';
+            
+            if (filteredPhrases.length === 0) {
+                phrasesTableBody.innerHTML = `
+                    <tr>
+                        <td colspan="3">
+                            <div class="empty-state">
+                                <i class="fas fa-inbox"></i>
+                                <h3>No intent phrases found</h3>
+                                <p>Add your first phrase using the form above</p>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                updatePaginationControls();
+                return;
+            }
+            
+            // Calculate pagination
+            const totalPages = Math.ceil(filteredPhrases.length / itemsPerPage);
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = Math.min(startIndex + itemsPerPage, filteredPhrases.length);
+            const paginatedPhrases = filteredPhrases.slice(startIndex, endIndex);
+            
+            // Display only the current page's phrases
+            paginatedPhrases.forEach(phrase => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${phrase.id}</td>
+                    <td>${phrase.value}</td>
+                    <td class="actions">
+                        <button class="warning edit-btn" data-id="${phrase.id}" data-value="${phrase.value}">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button class="danger delete-btn" data-id="${phrase.id}">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </td>
+                `;
+                phrasesTableBody.appendChild(row);
+            });
+            
+            // Update pagination controls
+            updatePaginationControls();
+            
+            // Add event listeners to edit and delete buttons
+            document.querySelectorAll('.edit-btn').forEach(btn => {
+                btn.addEventListener('click', handleEditPhrase);
+            });
+            
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', handleDeletePhrase);
+            });
+        }
+        
+        // Update pagination controls
+        function updatePaginationControls() {
+            const totalPages = Math.ceil(filteredPhrases.length / itemsPerPage);
+            
+            currentPageElement.textContent = currentPage;
+            totalPagesElement.textContent = totalPages;
+            
+            // Enable/disable buttons
+            firstPageBtn.disabled = currentPage === 1;
+            prevPageBtn.disabled = currentPage === 1;
+            nextPageBtn.disabled = currentPage === totalPages || totalPages === 0;
+            lastPageBtn.disabled = currentPage === totalPages || totalPages === 0;
+            
+            // Show/hide pagination controls if there's only one page
+            if (totalPages <= 1) {
+                paginationControls.style.display = 'none';
+            } else {
+                paginationControls.style.display = 'flex';
+            }
+        }
+        
+        // Navigation functions
+        function goToFirstPage() {
+            currentPage = 1;
+            displayIntentPhrases();
+        }
+        
+        function goToPreviousPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                displayIntentPhrases();
+            }
+        }
+        
+        function goToNextPage() {
+            const totalPages = Math.ceil(filteredPhrases.length / itemsPerPage);
+            if (currentPage < totalPages) {
+                currentPage++;
+                displayIntentPhrases();
+            }
+        }
+        
+        function goToLastPage() {
+            const totalPages = Math.ceil(filteredPhrases.length / itemsPerPage);
+            currentPage = totalPages;
+            displayIntentPhrases();
+        }
+        
+        // Add new intent phrase
+        async function addIntentPhrase(phrase) {
+            const submitBtn = addPhraseForm.querySelector('button');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<div class="loading"></div> Adding...';
+            submitBtn.disabled = true;
+            
+            try {
+                const formData = new FormData();
+                formData.append('phrase', phrase);
+                
+                const response = await fetch(`${API_BASE_URL}/intent-phrases`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.detail || `Failed to add phrase: ${response.statusText}`);
+                }
+                
+                showAlert('Phrase added successfully');
+                newPhraseInput.value = '';
+                loadIntentPhrases(); // Refresh the list
+            } catch (error) {
+                console.error('Error adding intent phrase:', error);
+                showAlert(`Error adding phrase: ${error.message}`, 'error');
+            } finally {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
+        }
+        
+        // Edit intent phrase
+        async function editIntentPhrase(id, newPhrase) {
+            const submitBtn = editPhraseForm.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<div class="loading"></div> Saving...';
+            submitBtn.disabled = true;
+            
+            try {
+                const formData = new FormData();
+                formData.append('new_phrase', newPhrase);
+                
+                const response = await fetch(`${API_BASE_URL}/intent-phrases/${id}`, {
+                    method: 'PUT',
+                    body: formData
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.detail || `Failed to update phrase: ${response.statusText}`);
+                }
+                
+                showAlert('Phrase updated successfully');
+                closeEditModal();
+                loadIntentPhrases(); // Refresh the list
+            } catch (error) {
+                console.error('Error updating intent phrase:', error);
+                showAlert(`Error updating phrase: ${error.message}`, 'error');
+            } finally {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
+        }
+        
+        // Delete intent phrase
+        async function deleteIntentPhrase(id) {
+            if (!confirm('Are you sure you want to delete this phrase?')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/intent-phrases/${id}`, {
+                    method: 'DELETE'
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.detail || `Failed to delete phrase: ${response.statusText}`);
+                }
+                
+                showAlert('Phrase deleted successfully');
+                loadIntentPhrases(); // Refresh the list
+            } catch (error) {
+                console.error('Error deleting intent phrase:', error);
+                showAlert(`Error deleting phrase: ${error.message}`, 'error');
+            }
+        }
+        
+        // Handle form submission for adding a new phrase
+        addPhraseForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const phrase = newPhraseInput.value.trim();
+            
+            if (phrase) {
+                addIntentPhrase(phrase);
+            } else {
+                showAlert('Please enter a phrase', 'error');
+            }
+        });
+        
+        // Handle edit phrase
+        function handleEditPhrase(e) {
+            const id = e.target.getAttribute('data-id');
+            const currentValue = e.target.getAttribute('data-value');
+            
+            editPhraseId.value = id;
+            editPhraseInput.value = currentValue;
+            editPhraseInput.focus();
+            
+            openEditModal();
+        }
+        
+        // Handle delete phrase
+        function handleDeletePhrase(e) {
+            const id = e.target.getAttribute('data-id');
+            deleteIntentPhrase(id);
+        }
+        
+        // Open edit modal
+        function openEditModal() {
+            editModal.classList.add('active');
+        }
+        
+        // Close edit modal
+        function closeEditModal() {
+            editModal.classList.remove('active');
+        }
+        
+        // Handle edit form submission
+        editPhraseForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const id = editPhraseId.value;
+            const newPhrase = editPhraseInput.value.trim();
+            
+            if (newPhrase) {
+                editIntentPhrase(id, newPhrase);
+            } else {
+                showAlert('Phrase cannot be empty', 'error');
+            }
+        });
+        
+        // Search functionality
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            currentPage = 1; // Reset to first page when searching
+            
+            if (searchTerm) {
+                filteredPhrases = allPhrases.filter(phrase => 
+                    phrase.value.toLowerCase().includes(searchTerm)
+                );
+            } else {
+                filteredPhrases = [...allPhrases];
+            }
+            
+            displayIntentPhrases();
+            updateStats(allPhrases);
+        });
+        
+        // Refresh phrases list
+        refreshBtn.addEventListener('click', loadIntentPhrases);
+        
+        // Modal event listeners
+        modalClose.addEventListener('click', closeEditModal);
+        cancelEdit.addEventListener('click', closeEditModal);
+        
+        // Close modal when clicking outside
+        editModal.addEventListener('click', (e) => {
+            if (e.target === editModal) {
+                closeEditModal();
+            }
+        });
+        
+        // Pagination event listeners
+        firstPageBtn.addEventListener('click', goToFirstPage);
+        prevPageBtn.addEventListener('click', goToPreviousPage);
+        nextPageBtn.addEventListener('click', goToNextPage);
+        lastPageBtn.addEventListener('click', goToLastPage);
+        
+        // Page size selector
+        pageSizeSelect.addEventListener('change', (e) => {
+            itemsPerPage = parseInt(e.target.value);
+            currentPage = 1; // Reset to first page when changing page size
+            displayIntentPhrases();
+            updateStats(allPhrases);
+        });
+        
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', () => {
+            loadIntentPhrases();
+            
+            // Check connection every 30 seconds
+            setInterval(checkConnection, 30000);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,67 @@
+[
+  {
+    "id": "6724c9f0-b4a6-4ccf-9ba1-487f3c4eae88",
+    "timestamp": "2025-11-17T15:18:38.316732",
+    "audio_filename": "recording.webm",
+    "audio_file_path": "uploaded_audio\\2025-11-17_15-18-36_recording.webm",
+    "raw_text": "I want stainless steel sheet",
+    "cleaned_text": "stainless steel sheet"
+  },
+  {
+    "id": "ff77da51-b291-48e9-aa30-c4adfd6b0d69",
+    "timestamp": "2025-11-17T15:21:02.395302",
+    "audio_filename": "recording.webm",
+    "audio_file_path": "uploaded_audio\\2025-11-17_15-21-00_recording.webm",
+    "raw_text": "can you show me aluminium sheet",
+    "cleaned_text": "me aluminium sheet"
+  },
+  {
+    "id": "fe9c4d6e-69b2-4460-a3e1-86e5a1ea0e35",
+    "timestamp": "2025-11-17T15:23:29.512675",
+    "audio_file_path": "uploaded_audio\\2025-11-17_15-23-28_recording.webm",
+    "raw_text": "please show me elbow pipe",
+    "cleaned_text": "elbow pipe"
+  },
+  {
+    "id": "1b741a1e-d16a-40ca-9e96-5eb4129676a3",
+    "timestamp": "2025-11-17T15:42:18.875366",
+    "audio_file_path": "uploaded_audio\\2025-11-17_15-42-17_recording.webm",
+    "raw_text": "I want stainless steel sheet",
+    "cleaned_text": "stainless steel sheet"
+  },
+  {
+    "id": "58b14d81-69b4-4089-8828-e74ebec05845",
+    "timestamp": "2025-11-17T15:51:03.003172",
+    "audio_file_path": "uploaded_audio\\2025-11-17_15-51-01_recording.webm",
+    "raw_text": "I want to keep for stainless steel sheet",
+    "cleaned_text": "keep for stainless steel sheet"
+  },
+  {
+    "id": "b73c94d0-4177-4c4b-abd2-bd7377624036",
+    "timestamp": "2025-11-17T16:13:12.954305",
+    "audio_file_path": "uploaded_audio\\2025-11-17_16-13-11_recording.webm",
+    "raw_text": "I want stainless steel sheet",
+    "cleaned_text": "stainless steel sheet"
+  },
+  {
+    "id": "a3bd52db-6d29-43f7-a27a-d37bae8233da",
+    "timestamp": "2025-11-17T16:13:41.096643",
+    "audio_file_path": "uploaded_audio\\2025-11-17_16-13-38_recording.webm",
+    "raw_text": "I want a stainless steel sheet SS 304",
+    "cleaned_text": "a stainless steel sheet SS 304"
+  },
+  {
+    "id": "7c3df9c9-7c86-4034-a489-fc6dabb1542a",
+    "timestamp": "2025-11-17T16:14:01.771275",
+    "audio_file_path": "uploaded_audio\\2025-11-17_16-14-00_recording.webm",
+    "raw_text": "I am looking for aluminium sheet",
+    "cleaned_text": "aluminium sheet"
+  },
+  {
+    "id": "9bf946c0-c5eb-4c5f-892f-cddcfc1abd9d",
+    "timestamp": "2025-11-17T16:18:48.774749",
+    "audio_file_path": "uploaded_audio\\2025-11-17_16-18-46-184211_recording.webm",
+    "raw_text": "I want elbow pipe",
+    "cleaned_text": "elbow pipe"
+  }
+]

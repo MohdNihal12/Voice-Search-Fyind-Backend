@@ -8,8 +8,10 @@ import re
 import json
 from typing import List
 from datetime import datetime 
+import uuid
 
 INTENT_PHRASES_PATH = "intent_phrases.json"
+TRANSCRIPTIONS_PATH = "transcriptions.json"
 
 app = FastAPI()
 
@@ -86,6 +88,48 @@ def get_next_id(intent_phrases: List[dict]) -> int:
     
     max_id = max(phrase.get("id", 0) for phrase in intent_phrases)
     return max_id + 1
+
+
+def save_transcription(raw_text: str, cleaned_text: str, audio_filename: str, audio_file_path: str) -> dict:
+    """
+    Save transcription data to JSON file with timestamp and unique ID.
+    Returns the saved transcription object.
+    """
+    try:
+        # Create transcription object
+        transcription_id = str(uuid.uuid4())
+        timestamp = datetime.now().isoformat()
+        
+        transcription_data = {
+            "id": transcription_id,
+            "timestamp": timestamp,
+            "audio_file_path": audio_file_path,
+            "raw_text": raw_text,
+            "cleaned_text": cleaned_text
+        }
+        
+        # Load existing transcriptions or create new file
+        transcriptions = []
+        if os.path.exists(TRANSCRIPTIONS_PATH):
+            try:
+                with open(TRANSCRIPTIONS_PATH, "r", encoding="utf-8") as f:
+                    transcriptions = json.load(f)
+            except (json.JSONDecodeError, Exception):
+                transcriptions = []
+        
+        # Add new transcription
+        transcriptions.append(transcription_data)
+        
+        # Save back to file - FIXED: removed duplicate ensure_ascii=False
+        with open(TRANSCRIPTIONS_PATH, "w", encoding="utf-8") as f:
+            json.dump(transcriptions, f, indent=2, ensure_ascii=False)
+        
+        print(f"Transcription saved with ID: {transcription_id}")
+        return transcription_data
+        
+    except Exception as e:
+        print(f"Error saving transcription: {e}")
+        return None
 
 
 # ---------------------------
@@ -247,7 +291,7 @@ def clean_text_remove_intent_phrases(text: str, intent_phrases: List[str]) -> st
 @app.post("/trans")
 async def transcribe_both(file: UploadFile = File(...)):
     """
-    Returns both raw and cleaned transcription in a single response.
+    Returns both raw and cleaned transcription in a single response and saves to JSON.
     """
     recognizer = sr.Recognizer()
     temp_in = tempfile.NamedTemporaryFile(delete=False, suffix=".tmp")
@@ -260,9 +304,9 @@ async def transcribe_both(file: UploadFile = File(...)):
         temp_in.flush()
         temp_in.close()
 
-        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-        saved_path = os.path.join(AUDIO_STORAGE_DIR, f"{timestamp}_{file.filename}")
-        with open(saved_path, "wb") as f:
+        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S-%f")
+        saved_audio_path = os.path.join(AUDIO_STORAGE_DIR, f"{timestamp}_{file.filename}")
+        with open(saved_audio_path, "wb") as f:
             f.write(file_content)
 
         # Convert to WAV using pydub
@@ -283,21 +327,31 @@ async def transcribe_both(file: UploadFile = File(...)):
             print(f"\n Raw transcription: {raw_text}")
             print(f" Cleaned query: {cleaned_text}\n")
 
-            # Return both texts
+            # Save transcription to JSON file
+            transcription_data = save_transcription(
+                raw_text=raw_text,
+                cleaned_text=cleaned_text,
+                audio_filename=file.filename,
+                audio_file_path=saved_audio_path
+            )
+
+            # Return both texts and transcription ID
             return {
                 "raw_text": raw_text,
-                "cleaned_text": cleaned_text
+                "cleaned_text": cleaned_text,
+                "transcription_id": transcription_data["id"] if transcription_data else None,
+                "message": "Transcription saved successfully" if transcription_data else "Transcription completed but failed to save"
             }
 
     except sr.UnknownValueError:
         print("Could not understand the audio")
-        return {"raw_text": "", "cleaned_text": ""}
+        return {"raw_text": "", "cleaned_text": "", "transcription_id": None, "message": "Could not understand the audio"}
     except sr.RequestError as e:
         print(f"Speech recognition service error: {e}")
-        return {"raw_text": "", "cleaned_text": ""}
+        return {"raw_text": "", "cleaned_text": "", "transcription_id": None, "message": f"Speech recognition service error: {e}"}
     except Exception as e:
         print(f"Error during transcription: {e}")
-        return {"raw_text": "", "cleaned_text": ""}
+        return {"raw_text": "", "cleaned_text": "", "transcription_id": None, "message": f"Error during transcription: {e}"}
     finally:
         for path in [temp_in.name, wav_path]:
             if path and os.path.exists(path):
@@ -306,4 +360,4 @@ async def transcribe_both(file: UploadFile = File(...)):
                 except Exception:
                     pass
 
-# uvicorn voice:app --host 10.0.17.101 --port 8001 --reload
+# uvicorn voice:app --host 10.0.17.101 --port 8004 --reload
