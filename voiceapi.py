@@ -1,15 +1,15 @@
-from fastapi import FastAPI, UploadFile, File, Form
+from fastapi import FastAPI, UploadFile, File, Form, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydub import AudioSegment
 import speech_recognition as sr
 import tempfile
 import os
 import re
+import json
 from typing import List
 from datetime import datetime 
-# from jiwer import wer, cer
 
-INTENT_PHRASES_PATH = "intent_phrases.txt"
+INTENT_PHRASES_PATH = "intent_phrases.json"
 
 app = FastAPI()
 
@@ -22,7 +22,7 @@ app.add_middleware(
 )
 
 # ---------------------------
-# Load intent phrases
+# Load intent phrases from JSON
 # ---------------------------
 
 AUDIO_STORAGE_DIR = "uploaded_audio"
@@ -31,18 +31,197 @@ os.makedirs(AUDIO_STORAGE_DIR, exist_ok=True)
 
 def load_intent_phrases(filepath: str = INTENT_PHRASES_PATH) -> List[str]:
     """
-    Load phrases from file, remove empty lines, and sort longest first.
+    Load phrases from JSON file, extract values from search_keywords array,
+    and sort longest first.
     """
     if not os.path.exists(filepath):
         return []
-    with open(filepath, "r", encoding="utf-8") as f:
-        phrases = [line.strip() for line in f if line.strip() and not line.strip().startswith("#")]
-    phrases.sort(key=len, reverse=True)
-    return phrases
+    
+    try:
+        with open(filepath, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        
+        # Extract the 'value' field from each object in search_keywords array
+        phrases = []
+        if "search_keywords" in data and isinstance(data["search_keywords"], list):
+            phrases = [item["value"].strip() for item in data["search_keywords"] 
+                      if item.get("value") and item["value"].strip()]
+        
+        # Sort by length (longest first) for proper removal order
+        phrases.sort(key=len, reverse=True)
+        return phrases
+        
+    except (json.JSONDecodeError, KeyError, Exception) as e:
+        print(f"Error loading intent phrases from JSON: {e}")
+        return []
+
+
+def save_intent_phrases(intent_phrases: List[dict], filepath: str = INTENT_PHRASES_PATH) -> bool:
+    """
+    Save intent phrases to JSON file.
+    Returns True if successful, False otherwise.
+    """
+    try:
+        # Create the data structure
+        data = {
+            "search_keywords": intent_phrases
+        }
+        
+        # Write to file
+        with open(filepath, "w", encoding="utf-8") as f:
+            json.dump(data, f, indent=2, ensure_ascii=False)
+        
+        return True
+    except Exception as e:
+        print(f"Error saving intent phrases: {e}")
+        return False
+
+
+def get_next_id(intent_phrases: List[dict]) -> int:
+    """
+    Get the next available ID for new intent phrases.
+    """
+    if not intent_phrases:
+        return 1
+    
+    max_id = max(phrase.get("id", 0) for phrase in intent_phrases)
+    return max_id + 1
 
 
 # ---------------------------
-# Remove intent/filler phrases
+# Intent Phrases Management Endpoints
+# ---------------------------
+
+@app.get("/intent-phrases")
+async def get_intent_phrases():
+    """
+    Get all intent phrases.
+    """
+    try:
+        if not os.path.exists(INTENT_PHRASES_PATH):
+            return {"search_keywords": []}
+        
+        with open(INTENT_PHRASES_PATH, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        
+        return data
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error reading intent phrases: {str(e)}")
+
+
+@app.post("/intent-phrases")
+async def add_intent_phrase(phrase: str = Form(...)):
+    """
+    Add a new intent phrase.
+    """
+    try:
+        phrase = phrase.strip()
+        if not phrase:
+            raise HTTPException(status_code=400, detail="Phrase cannot be empty")
+        
+        # Load existing phrases
+        if os.path.exists(INTENT_PHRASES_PATH):
+            with open(INTENT_PHRASES_PATH, "r", encoding="utf-8") as f:
+                data = json.load(f)
+        else:
+            data = {"search_keywords": []}
+        
+        # Check if phrase already exists
+        existing_phrases = [p["value"].lower() for p in data["search_keywords"]]
+        if phrase.lower() in existing_phrases:
+            raise HTTPException(status_code=400, detail="Phrase already exists")
+        
+        # Add new phrase
+        new_phrase = {
+            "id": get_next_id(data["search_keywords"]),
+            "value": phrase
+        }
+        data["search_keywords"].append(new_phrase)
+        
+        # Save back to file
+        if save_intent_phrases(data["search_keywords"]):
+            return {"message": "Phrase added successfully", "phrase": new_phrase}
+        else:
+            raise HTTPException(status_code=500, detail="Failed to save phrase")
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error adding intent phrase: {str(e)}")
+
+
+@app.delete("/intent-phrases/{phrase_id}")
+async def delete_intent_phrase(phrase_id: int):
+    """
+    Delete an intent phrase by ID.
+    """
+    try:
+        if not os.path.exists(INTENT_PHRASES_PATH):
+            raise HTTPException(status_code=404, detail="No intent phrases found")
+        
+        with open(INTENT_PHRASES_PATH, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        
+        # Find and remove the phrase
+        original_count = len(data["search_keywords"])
+        data["search_keywords"] = [p for p in data["search_keywords"] if p.get("id") != phrase_id]
+        
+        if len(data["search_keywords"]) == original_count:
+            raise HTTPException(status_code=404, detail="Phrase not found")
+        
+        # Save back to file
+        if save_intent_phrases(data["search_keywords"]):
+            return {"message": "Phrase deleted successfully"}
+        else:
+            raise HTTPException(status_code=500, detail="Failed to delete phrase")
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error deleting intent phrase: {str(e)}")
+
+
+@app.put("/intent-phrases/{phrase_id}")
+async def update_intent_phrase(phrase_id: int, new_phrase: str = Form(...)):
+    """
+    Update an existing intent phrase.
+    """
+    try:
+        new_phrase = new_phrase.strip()
+        if not new_phrase:
+            raise HTTPException(status_code=400, detail="Phrase cannot be empty")
+        
+        if not os.path.exists(INTENT_PHRASES_PATH):
+            raise HTTPException(status_code=404, detail="No intent phrases found")
+        
+        with open(INTENT_PHRASES_PATH, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        
+        # Find and update the phrase
+        phrase_found = False
+        for phrase in data["search_keywords"]:
+            if phrase.get("id") == phrase_id:
+                phrase["value"] = new_phrase
+                phrase_found = True
+                break
+        
+        if not phrase_found:
+            raise HTTPException(status_code=404, detail="Phrase not found")
+        
+        # Save back to file
+        if save_intent_phrases(data["search_keywords"]):
+            return {"message": "Phrase updated successfully"}
+        else:
+            raise HTTPException(status_code=500, detail="Failed to update phrase")
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error updating intent phrase: {str(e)}")
+
+
+# ---------------------------
+# Remove intent/filler phrases (same as before)
 # ---------------------------
 def clean_text_remove_intent_phrases(text: str, intent_phrases: List[str]) -> str:
     """
@@ -60,7 +239,6 @@ def clean_text_remove_intent_phrases(text: str, intent_phrases: List[str]) -> st
 
     cleaned = re.sub(r"\s+", " ", cleaned).strip()
     return cleaned
-
 
 
 # ---------------------------
@@ -128,5 +306,4 @@ async def transcribe_both(file: UploadFile = File(...)):
                 except Exception:
                     pass
 
-################################################
 # uvicorn voice:app --host 10.0.17.101 --port 8001 --reload

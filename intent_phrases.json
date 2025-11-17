@@ -1,0 +1,252 @@
+{
+  "search_keywords": [
+    {
+      "id": 1,
+      "value": "i want"
+    },
+    {
+      "id": 2,
+      "value": "i want to"
+    },
+    {
+      "id": 3,
+      "value": "i want to buy"
+    },
+    {
+      "id": 4,
+      "value": "i want to get"
+    },
+    {
+      "id": 5,
+      "value": "where can i find"
+    },
+    {
+      "id": 6,
+      "value": "where to buy"
+    },
+    {
+      "id": 7,
+      "value": "where can i buy"
+    },
+    {
+      "id": 8,
+      "value": "show me"
+    },
+    {
+      "id": 9,
+      "value": "please show me"
+    },
+    {
+      "id": 10,
+      "value": "please"
+    },
+    {
+      "id": 11,
+      "value": "show"
+    },
+    {
+      "id": 12,
+      "value": "i need"
+    },
+    {
+      "id": 13,
+      "value": "i need to"
+    },
+    {
+      "id": 14,
+      "value": "find me"
+    },
+    {
+      "id": 15,
+      "value": "find for me"
+    },
+    {
+      "id": 16,
+      "value": "can you find"
+    },
+    {
+      "id": 17,
+      "value": "can you get me"
+    },
+    {
+      "id": 18,
+      "value": "can you get"
+    },
+    {
+      "id": 19,
+      "value": "get me"
+    },
+    {
+      "id": 20,
+      "value": "get me some"
+    },
+    {
+      "id": 21,
+      "value": "search for"
+    },
+    {
+      "id": 22,
+      "value": "search"
+    },
+    {
+      "id": 23,
+      "value": "looking for"
+    },
+    {
+      "id": 24,
+      "value": "i am looking for"
+    },
+    {
+      "id": 25,
+      "value": "i'm looking for"
+    },
+    {
+      "id": 26,
+      "value": "want"
+    },
+    {
+      "id": 27,
+      "value": "want to buy"
+    },
+    {
+      "id": 28,
+      "value": "want to get"
+    },
+    {
+      "id": 29,
+      "value": "looking to buy"
+    },
+    {
+      "id": 30,
+      "value": "looking to get"
+    },
+    {
+      "id": 31,
+      "value": "need details of"
+    },
+    {
+      "id": 32,
+      "value": "need info on"
+    },
+    {
+      "id": 33,
+      "value": "tell me about"
+    },
+    {
+      "id": 34,
+      "value": "show products for"
+    },
+    {
+      "id": 35,
+      "value": "give me"
+    },
+    {
+      "id": 36,
+      "value": "give me details on"
+    },
+    {
+      "id": 37,
+      "value": "get details of"
+    },
+    {
+      "id": 38,
+      "value": "do you have"
+    },
+    {
+      "id": 39,
+      "value": "do you sell"
+    },
+    {
+      "id": 40,
+      "value": "do you stock"
+    },
+    {
+      "id": 41,
+      "value": "where do i find"
+    },
+    {
+      "id": 42,
+      "value": "where do i buy"
+    },
+    {
+      "id": 43,
+      "value": "can you show"
+    },
+    {
+      "id": 44,
+      "value": "please find"
+    },
+    {
+      "id": 45,
+      "value": "i would like"
+    },
+    {
+      "id": 46,
+      "value": "i would like to buy"
+    },
+    {
+      "id": 47,
+      "value": "could you get"
+    },
+    {
+      "id": 48,
+      "value": "could you find"
+    },
+    {
+      "id": 49,
+      "value": "help me find"
+    },
+    {
+      "id": 50,
+      "value": "help me get"
+    },
+    {
+      "id": 51,
+      "value": "anywhere i can buy"
+    },
+    {
+      "id": 52,
+      "value": "which shop sells"
+    },
+    {
+      "id": 53,
+      "value": "which store sells"
+    },
+    {
+      "id": 54,
+      "value": "nearest shop for"
+    },
+    {
+      "id": 55,
+      "value": "nearest store for"
+    },
+    {
+      "id": 56,
+      "value": "nearest supplier of"
+    },
+    {
+      "id": 57,
+      "value": "price of"
+    },
+    {
+      "id": 58,
+      "value": "cost of"
+    },
+    {
+      "id": 59,
+      "value": "how much is"
+    },
+    {
+      "id": 60,
+      "value": "do you have any"
+    },
+    {
+      "id": 61,
+      "value": "is there any place"
+    },
+    {
+      "id": 62,
+      "value": "where is"
+    }
+  ]
+}
