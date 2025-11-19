@@ -63,5 +63,138 @@
     "audio_file_path": "uploaded_audio\\2025-11-17_16-18-46-184211_recording.webm",
     "raw_text": "I want elbow pipe",
     "cleaned_text": "elbow pipe"
+  },
+  {
+    "id": "9a9c8254-ff66-4e86-a63d-49584d6b54e9",
+    "timestamp": "2025-11-19T14:09:16.144237",
+    "audio_file_path": "uploaded_audio\\2025-11-19_14-09-14-426078_temp-audio-1763546954369-iie8xc2.webm",
+    "raw_text": "I want stainless steel sheet",
+    "cleaned_text": "stainless steel sheet"
+  },
+  {
+    "id": "fa58374b-5331-4960-89f3-344fb5dc4f88",
+    "timestamp": "2025-11-19T14:09:23.947377",
+    "audio_file_path": "uploaded_audio\\2025-11-19_14-09-22-942219_temp-audio-1763546962937-rs2tily.webm",
+    "raw_text": "metals",
+    "cleaned_text": "metals"
+  },
+  {
+    "id": "bff9e831-f444-457b-9ee1-f5ab07dc0f33",
+    "timestamp": "2025-11-19T14:09:49.476736",
+    "audio_file_path": "uploaded_audio\\2025-11-19_14-09-47-999476_temp-audio-1763546987996-kpcvzzd.webm",
+    "raw_text": "hotels",
+    "cleaned_text": "hotels"
+  },
+  {
+    "id": "fed7f600-0529-4e2a-9442-87f5fa08e1df",
+    "timestamp": "2025-11-19T14:10:06.306632",
+    "audio_file_path": "uploaded_audio\\2025-11-19_14-10-05-172563_temp-audio-1763547005169-9u4s4ct.webm",
+    "raw_text": "Airtel",
+    "cleaned_text": "Airtel"
+  },
+  {
+    "id": "f79ab9fb-27e8-4947-9324-00505d979468",
+    "timestamp": "2025-11-19T14:11:03.818582",
+    "audio_file_path": "uploaded_audio\\2025-11-19_14-11-02-301575_temp-audio-1763547062296-h94wlab.webm",
+    "raw_text": "I want elbow pipe",
+    "cleaned_text": "elbow pipe"
+  },
+  {
+    "id": "7722f040-96d7-401a-8781-49b4b5fd7fac",
+    "timestamp": "2025-11-19T14:11:18.518444",
+    "audio_file_path": "uploaded_audio\\2025-11-19_14-11-17-257127_temp-audio-1763547077252-x281vm5.webm",
+    "raw_text": "water metre",
+    "cleaned_text": "water metre"
+  },
+  {
+    "id": "7af8f066-4651-4b14-b75b-0f77d53b5d79",
+    "timestamp": "2025-11-19T14:11:29.338588",
+    "audio_file_path": "uploaded_audio\\2025-11-19_14-11-27-427413_temp-audio-1763547087422-umh8cf2.webm",
+    "raw_text": "I am looking for stainless steel sheet",
+    "cleaned_text": "stainless steel sheet"
+  },
+  {
+    "id": "17676769-89ad-4824-b00e-2e90596b5179",
+    "timestamp": "2025-11-19T14:15:18.312474",
+    "audio_file_path": "uploaded_audio\\2025-11-19_14-15-16-795454_temp-audio-1763547316732-ju1y3h8.webm",
+    "raw_text": "metals",
+    "cleaned_text": "metals"
+  },
+  {
+    "id": "8e99f720-cf53-4960-859b-f94e76a60fca",
+    "timestamp": "2025-11-19T14:15:31.618618",
+    "audio_file_path": "uploaded_audio\\2025-11-19_14-15-30-147949_temp-audio-1763547330121-7eiapme.webm",
+    "raw_text": "water",
+    "cleaned_text": "water"
+  },
+  {
+    "id": "1c69f185-8f71-4e4a-8db7-64a93b374346",
+    "timestamp": "2025-11-19T14:18:16.456133",
+    "audio_file_path": "uploaded_audio\\2025-11-19_14-18-14-895435_temp-audio-1763547494867-rxepp6k.webm",
+    "raw_text": "metals",
+    "cleaned_text": "metals"
+  },
+  {
+    "id": "7f81b98a-a771-4e2e-b843-9d545c6e9d27",
+    "timestamp": "2025-11-19T14:20:04.032053",
+    "audio_file_path": "uploaded_audio\\2025-11-19_14-20-02-561122_temp-audio-1763547602550-asbffiv.webm",
+    "raw_text": "metals",
+    "cleaned_text": "metals"
+  },
+  {
+    "id": "87cd210c-4b3f-4226-b7f1-48512dd79f87",
+    "timestamp": "2025-11-19T14:20:17.356828",
+    "audio_file_path": "uploaded_audio\\2025-11-19_14-20-15-709003_temp-audio-1763547615704-zjaiqra.webm",
+    "raw_text": "stainless steel sheet",
+    "cleaned_text": "stainless steel sheet"
+  },
+  {
+    "id": "dce0d50d-d375-495d-b5db-69cc037f93c6",
+    "timestamp": "2025-11-19T14:20:56.029229",
+    "audio_file_path": "uploaded_audio\\2025-11-19_14-20-54-699242_temp-audio-1763547654673-vc6sqsb.webm",
+    "raw_text": "water metre",
+    "cleaned_text": "water metre"
+  },
+  {
+    "id": "39ff20e0-16ba-4db8-80a4-e1531df9f5a9",
+    "timestamp": "2025-11-19T14:21:03.864427",
+    "audio_file_path": "uploaded_audio\\2025-11-19_14-21-02-584505_temp-audio-1763547662570-2a24gqr.webm",
+    "raw_text": "advocate",
+    "cleaned_text": "advocate"
+  },
+  {
+    "id": "1ef8b659-c4b3-4d15-87e1-818de607ff98",
+    "timestamp": "2025-11-19T14:21:12.456292",
+    "audio_file_path": "uploaded_audio\\2025-11-19_14-21-11-059335_temp-audio-1763547671054-q97cbls.webm",
+    "raw_text": "elbow pipe",
+    "cleaned_text": "elbow pipe"
+  },
+  {
+    "id": "bce90534-9333-49d3-8684-116af9adcaee",
+    "timestamp": "2025-11-19T14:21:22.139234",
+    "audio_file_path": "uploaded_audio\\2025-11-19_14-21-20-675438_temp-audio-1763547680670-ik1w56e.webm",
+    "raw_text": "metals",
+    "cleaned_text": "metals"
+  },
+  {
+    "id": "ebab9402-b1ce-4052-ad22-b34cb5b9e0e7",
+    "timestamp": "2025-11-19T14:21:29.450727",
+    "audio_file_path": "uploaded_audio\\2025-11-19_14-21-28-088163_temp-audio-1763547688084-1x5k4jp.webm",
+    "raw_text": "machineries",
+    "cleaned_text": "machineries"
+  },
+  {
+    "id": "187d5798-c36f-4ac8-bc61-3829b7e08b46",
+    "timestamp": "2025-11-19T14:21:51.991918",
+    "audio_file_path": "uploaded_audio\\2025-11-19_14-21-50-359002_temp-audio-1763547710354-zie4dxg.webm",
+    "raw_text": "machinery",
+    "cleaned_text": "machinery"
+  },
+  {
+    "id": "ec30723b-2e1a-4c61-864b-668d7bfd7dbe",
+    "timestamp": "2025-11-19T14:22:20.444092",
+    "audio_file_path": "uploaded_audio\\2025-11-19_14-22-19-017600_temp-audio-1763547739015-nceolek.webm",
+    "raw_text": "safety gloves",
+    "cleaned_text": "safety gloves"
   }
 ]

@@ -9,6 +9,7 @@ import json
 from typing import List
 from datetime import datetime 
 import uuid
+from pydub import AudioSegment
 
 INTENT_PHRASES_PATH = "intent_phrases.json"
 TRANSCRIPTIONS_PATH = "transcriptions.json"
@@ -283,6 +284,7 @@ def clean_text_remove_intent_phrases(text: str, intent_phrases: List[str]) -> st
 
     cleaned = re.sub(r"\s+", " ", cleaned).strip()
     return cleaned
+    
 
 
 # ---------------------------
@@ -293,6 +295,7 @@ async def transcribe_both(file: UploadFile = File(...)):
     """
     Returns both raw and cleaned transcription in a single response and saves to JSON.
     """
+
     recognizer = sr.Recognizer()
     temp_in = tempfile.NamedTemporaryFile(delete=False, suffix=".tmp")
     wav_path = None
@@ -304,60 +307,84 @@ async def transcribe_both(file: UploadFile = File(...)):
         temp_in.flush()
         temp_in.close()
 
+        # Save original uploaded audio file
         timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S-%f")
         saved_audio_path = os.path.join(AUDIO_STORAGE_DIR, f"{timestamp}_{file.filename}")
         with open(saved_audio_path, "wb") as f:
             f.write(file_content)
 
-        # Convert to WAV using pydub
+        # ----------------------------
+        # Convert to high-quality WAV 
+        # ----------------------------
         audio = AudioSegment.from_file(temp_in.name)
-        wav_path = temp_in.name + ".wav"
-        audio.export(wav_path, format="wav")
+        if len(audio) < 500:  
+            padding = AudioSegment.silent(duration=300)
+            audio = padding + audio + padding
 
+        # Enhance audio clarity
+        audio = audio.normalize()
+        audio = audio.set_channels(1)         # mono
+        audio = audio.set_frame_rate(44100)   # 44.1 kHz
+
+        wav_path = temp_in.name + ".wav"
+        audio.export(
+            wav_path,
+            format="wav",
+            parameters=["-ac", "1", "-ar", "44100"]
+        )
+
+        # ----------------------------
         # Transcribe audio
+        # ----------------------------
         with sr.AudioFile(wav_path) as source:
             audio_data = recognizer.record(source)
             raw_text = recognizer.recognize_google(audio_data)
 
-            # Load phrases and clean text
-            intent_phrases = load_intent_phrases()
-            cleaned_text = clean_text_remove_intent_phrases(raw_text, intent_phrases)
+        # ----------------------------
+        # Clean text using intent phrases
+        # ----------------------------
+        intent_phrases = load_intent_phrases()
+        cleaned_text = clean_text_remove_intent_phrases(raw_text, intent_phrases)
 
-            # Print both versions to terminal
-            print(f"\n Raw transcription: {raw_text}")
-            print(f" Cleaned query: {cleaned_text}\n")
+        # Print to console
+        print(f"\n Raw transcription: {raw_text}")
+        print(f" Cleaned query: {cleaned_text}\n")
 
-            # Save transcription to JSON file
-            transcription_data = save_transcription(
-                raw_text=raw_text,
-                cleaned_text=cleaned_text,
-                audio_filename=file.filename,
-                audio_file_path=saved_audio_path
-            )
+        # ----------------------------
+        # Save transcription to JSON
+        # ----------------------------
+        transcription_data = save_transcription(
+            raw_text=raw_text,
+            cleaned_text=cleaned_text,
+            audio_filename=file.filename,
+            audio_file_path=saved_audio_path
+        )
 
-            # Return both texts and transcription ID
-            return {
-                "raw_text": raw_text,
-                "cleaned_text": cleaned_text,
-                "transcription_id": transcription_data["id"] if transcription_data else None,
-                "message": "Transcription saved successfully" if transcription_data else "Transcription completed but failed to save"
-            }
+        return {
+            "raw_text": raw_text,
+            "cleaned_text": cleaned_text,
+            "transcription_id": transcription_data["id"] if transcription_data else None,
+            "message": "Transcription saved successfully" if transcription_data else "Transcription completed but failed to save"
+        }
 
     except sr.UnknownValueError:
-        print("Could not understand the audio")
         return {"raw_text": "", "cleaned_text": "", "transcription_id": None, "message": "Could not understand the audio"}
+
     except sr.RequestError as e:
-        print(f"Speech recognition service error: {e}")
         return {"raw_text": "", "cleaned_text": "", "transcription_id": None, "message": f"Speech recognition service error: {e}"}
+
     except Exception as e:
         print(f"Error during transcription: {e}")
         return {"raw_text": "", "cleaned_text": "", "transcription_id": None, "message": f"Error during transcription: {e}"}
+
     finally:
+        # cleanup temp files
         for path in [temp_in.name, wav_path]:
             if path and os.path.exists(path):
                 try:
                     os.remove(path)
-                except Exception:
+                except:
                     pass
+
 
 # uvicorn voice:app --host 10.0.17.101 --port 8004 --reload
